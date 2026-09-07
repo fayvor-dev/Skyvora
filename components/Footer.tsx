@@ -8,6 +8,7 @@ const columns = [
       { href: "/aircraft", label: "Aircraft" },
       { href: "/destinations", label: "Destinations" },
       { href: "/services", label: "Services" },
+      { href: "/membership", label: "Membership" },
       { href: "/charter", label: "Charter" },
     ],
   },

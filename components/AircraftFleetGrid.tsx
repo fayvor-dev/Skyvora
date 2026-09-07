@@ -13,6 +13,7 @@ const filters: (AircraftCategory | "All")[] = [
   "Heavy Jet",
   "Ultra-Long-Range",
   "VIP Airliner",
+  "Helicopter",
 ];
 
 export default function AircraftFleetGrid() {

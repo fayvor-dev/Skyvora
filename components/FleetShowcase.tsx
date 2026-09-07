@@ -4,8 +4,12 @@ import SectionHeading from "@/components/SectionHeading";
 import AircraftCard from "@/components/AircraftCard";
 import { aircraftFleet } from "@/lib/aircraft";
 
+const featuredSlugs = ["gulfstream-g650er", "boeing-777-vvip", "airbus-h160-signature"];
+
 export default function FleetShowcase() {
-  const featured = aircraftFleet.slice(0, 3);
+  const featured = featuredSlugs
+    .map((slug) => aircraftFleet.find((a) => a.slug === slug))
+    .filter((a): a is (typeof aircraftFleet)[number] => Boolean(a));
 
   return (
     <section className="max-w-6xl mx-auto px-6 py-24">

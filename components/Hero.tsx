@@ -11,8 +11,8 @@ export default function Hero() {
     <section className="relative min-h-[100svh] flex flex-col justify-end overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1540339832862-474599807836?w=2000&q=85"
-          alt="Private jet on a runway at dusk"
+          src="/images/hero-cloud-jet.jpg"
+          alt="Private jet flying above the clouds"
           fill
           priority
           sizes="100vw"
@@ -48,7 +48,7 @@ export default function Hero() {
         >
           Beyond
           <br />
-          the ordinary.
+          <span className="shiny-gold animate-shiny">the ordinary.</span>
         </motion.h1>
 
         <motion.p

@@ -12,6 +12,7 @@ const links = [
   { href: "/aircraft", label: "Aircraft" },
   { href: "/destinations", label: "Destinations" },
   { href: "/services", label: "Services" },
+  { href: "/membership", label: "Membership" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
@@ -44,7 +45,7 @@ export default function Navbar() {
           SKYVORA
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-6">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
