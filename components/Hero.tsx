@@ -1,23 +1,35 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import CharterSearchPanel from "@/components/CharterSearchPanel";
 
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      videoRef.current?.pause();
+    }
+  }, []);
+
   return (
     <section className="relative min-h-[100svh] flex flex-col justify-end overflow-hidden">
       <div className="absolute inset-0">
-        <Image
-          src="/images/hero-cloud-jet.jpg"
-          alt="Private jet flying above the clouds"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/hero-cloud-jet.jpg"
+          className="w-full h-full object-cover"
+        >
+          <source src="/videos/hero-jet.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-b from-obsidian/85 via-obsidian/30 to-obsidian" />
         <div className="absolute inset-0 bg-gradient-to-r from-obsidian/60 via-transparent to-obsidian/40" />
         <svg

@@ -7,6 +7,7 @@ import { clsx } from "clsx";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { aircraftFleet } from "@/lib/aircraft";
 import { optionalServices } from "@/lib/services";
+import { supabase } from "@/lib/supabase";
 
 const steps = ["Journey", "Passengers", "Aircraft", "Services", "Contact"];
 
@@ -57,8 +58,40 @@ export default function CharterForm() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    const { error: insertError } = await supabase.from("charter_requests").insert({
+      from_location: form.from,
+      to_location: form.to,
+      departure_date: form.departureDate || null,
+      return_date: form.returnDate || null,
+      trip_type: form.tripType,
+      adults: form.adults,
+      children: form.children,
+      special_requirements: form.specialRequirements || null,
+      aircraft_mode: form.aircraftMode,
+      aircraft_choice: form.aircraftChoice || null,
+      category: form.category || null,
+      selected_services: form.selectedServices,
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      contact_method: form.contactMethod,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError("Something went wrong sending your request. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
   }
 
@@ -301,13 +334,17 @@ export default function CharterForm() {
               <ArrowRight size={15} strokeWidth={1.5} />
             </button>
           ) : (
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-gold hover:bg-gold-light text-obsidian text-sm font-medium px-6 py-3 transition-colors"
-            >
-              Request Your Charter
-              <ArrowRight size={15} strokeWidth={1.5} />
-            </button>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-2 rounded-full bg-gold hover:bg-gold-light disabled:opacity-60 text-obsidian text-sm font-medium px-6 py-3 transition-colors"
+              >
+                {submitting ? "Sending..." : "Request Your Charter"}
+                {!submitting && <ArrowRight size={15} strokeWidth={1.5} />}
+              </button>
+              {error && <p className="text-xs text-red-400">{error}</p>}
+            </div>
           )}
         </div>
       </form>

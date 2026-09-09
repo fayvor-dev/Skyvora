@@ -2,13 +2,37 @@
 
 import { useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
-  const [name, setName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("General inquiry");
+  const [message, setMessage] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    const { error: insertError } = await supabase.from("contact_messages").insert({
+      name,
+      email,
+      subject,
+      message,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError("Something went wrong sending your message. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
   }
 
@@ -42,6 +66,8 @@ export default function ContactForm() {
           <span className="text-xs text-silver/60">Email</span>
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
             className="glass-1 rounded-xl px-4 py-2.5 text-sm text-pearl outline-none focus:border-gold/40 w-full"
           />
@@ -49,7 +75,11 @@ export default function ContactForm() {
       </div>
       <label className="flex flex-col gap-1.5">
         <span className="text-xs text-silver/60">Subject</span>
-        <select className="glass-1 rounded-xl px-4 py-2.5 text-sm text-pearl outline-none focus:border-gold/40 w-full bg-transparent">
+        <select
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="glass-1 rounded-xl px-4 py-2.5 text-sm text-pearl outline-none focus:border-gold/40 w-full bg-transparent"
+        >
           <option className="bg-charcoal">General inquiry</option>
           <option className="bg-charcoal">Charter request</option>
           <option className="bg-charcoal">Corporate travel</option>
@@ -61,17 +91,23 @@ export default function ContactForm() {
         <span className="text-xs text-silver/60">Message</span>
         <textarea
           rows={5}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           required
           className="glass-1 rounded-xl px-4 py-3 text-sm text-pearl outline-none focus:border-gold/40 w-full"
         />
       </label>
-      <button
-        type="submit"
-        className="inline-flex items-center gap-2 rounded-full bg-gold hover:bg-gold-light text-obsidian text-sm font-medium px-6 py-3 transition-colors"
-      >
-        Send Message
-        <ArrowRight size={15} strokeWidth={1.5} />
-      </button>
+      <div className="flex flex-col items-start gap-2">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 rounded-full bg-gold hover:bg-gold-light disabled:opacity-60 text-obsidian text-sm font-medium px-6 py-3 transition-colors"
+        >
+          {submitting ? "Sending..." : "Send Message"}
+          {!submitting && <ArrowRight size={15} strokeWidth={1.5} />}
+        </button>
+        {error && <p className="text-xs text-red-400">{error}</p>}
+      </div>
     </form>
   );
 }

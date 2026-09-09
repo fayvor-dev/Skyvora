@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface Tier {
   name: string;
@@ -56,6 +57,34 @@ const tiers: Tier[] = [
 
 export default function MembershipTiers() {
   const [yearly, setYearly] = useState(false);
+  const [openTier, setOpenTier] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState<string | null>(null);
+
+  async function handleConfirm(tierName: string) {
+    if (!email) return;
+    setSubmitting(true);
+    setError(null);
+
+    const { error: insertError } = await supabase.from("membership_signups").insert({
+      tier: tierName,
+      billing_cycle: yearly ? "yearly" : "monthly",
+      email,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError("Something went wrong. Please try again.");
+      return;
+    }
+
+    setConfirmed(tierName);
+    setOpenTier(null);
+    setEmail("");
+  }
 
   return (
     <section className="sv-pricing-section">
@@ -82,7 +111,33 @@ export default function MembershipTiers() {
                 </li>
               ))}
             </ul>
-            <button className="sv-btn">Choose {tier.name}</button>
+
+            {confirmed === tier.name ? (
+              <p className="text-center text-sm text-gold">You&rsquo;re on the list — we&rsquo;ll be in touch.</p>
+            ) : openTier === tier.name ? (
+              <div className="flex flex-col gap-2.5">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  className="rounded-full bg-white/5 border border-white/15 px-4 py-2 text-xs text-pearl outline-none focus:border-gold/50 placeholder:text-silver/40 text-center"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleConfirm(tier.name)}
+                  disabled={submitting || !email}
+                  className="sv-btn disabled:opacity-60"
+                >
+                  {submitting ? "Sending..." : "Confirm"}
+                </button>
+                {error && <p className="text-[11px] text-red-400 text-center">{error}</p>}
+              </div>
+            ) : (
+              <button type="button" onClick={() => setOpenTier(tier.name)} className="sv-btn">
+                Choose {tier.name}
+              </button>
+            )}
           </div>
         ))}
       </div>
