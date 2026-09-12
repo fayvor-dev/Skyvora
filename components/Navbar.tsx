@@ -34,7 +34,10 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 px-4 sm:px-6 pt-4">
+    <header
+      className="fixed top-0 inset-x-0 z-50 px-4 sm:px-6"
+      style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+    >
       <div
         className={clsx(
           "mx-auto max-w-6xl flex items-center justify-between rounded-full px-5 sm:px-6 transition-all duration-500",
