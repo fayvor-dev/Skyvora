@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   title: "SKYVORA — Beyond The Ordinary",
   description:
     "Private aviation designed around your journey, your time, and your destination. Charter exceptional aircraft with SKYVORA.",
-  metadataBase: new URL("https://skyvora.example"),
+  metadataBase: new URL("https://sky-vora.vercel.app"),
   manifest: "/manifest.json",
   openGraph: {
     title: "SKYVORA — Beyond The Ordinary",
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -49,6 +53,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="en">
       <body className="bg-obsidian text-pearl min-h-screen flex flex-col">
@@ -57,6 +63,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <InstallPrompt />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
